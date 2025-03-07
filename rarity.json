@@ -1,0 +1,129 @@
+{
+  "cards": [
+    {
+      "id": 1,
+      "name": "Meikonikos",
+      "image": "meikonikos.webp",
+      "rarity": "Mythic",
+      "total_available": 3
+    },
+    {
+      "id": 2,
+      "name": "latinorumana",
+      "image": "latinorumana.webp",
+      "rarity": "common",
+      "total_available": 297
+    },
+    {
+      "id": 3,
+      "name": "p3rah",
+      "image": "p3rah.webp",
+      "rarity": "epic",
+      "total_available": 29
+    },
+    {
+      "id": 4,
+      "name": "nijimaaaa",
+      "image": "nijimaaaa.webp",
+      "rarity": "legendary",
+      "total_available": 15
+    },
+    {
+      "id": 5,
+      "name": "Glazzier",
+      "image": "glazzier.webp",
+      "rarity": "epic",
+      "total_available": 30
+    },
+    {
+      "id": 6,
+      "name": "Inder",
+      "image": "Inder.webp",
+      "rarity": "epic",
+      "total_available": 30
+    },
+    {
+      "id": 7,
+      "name": "empanadas",
+      "image": "empanadas.webp",
+      "rarity": "legendary",
+      "total_available": 15
+    },
+    {
+      "id": 8,
+      "name": "vel.",
+      "image": "vel.webp",
+      "rarity": "epic",
+      "total_available": 30
+    },
+    {
+      "id": 9,
+      "name": "mohita",
+      "image": "mohita.webp",
+      "rarity": "common",
+      "total_available": 300
+    },
+    {
+      "id": 10,
+      "name": "amdered",
+      "image": "amdered.webp",
+      "rarity": "common",
+      "total_available": 300
+    },
+    {
+      "id": 11,
+      "name": "jajas0_1",
+      "image": "jajas0_1.webp",
+      "rarity": "common",
+      "total_available": 300
+    },
+    {
+      "id": 12,
+      "name": "bread_santi",
+      "image": "bread_santi.webp",
+      "rarity": "common",
+      "total_available": 300
+    },
+    {
+      "id": 13,
+      "name": "yallknwjuno",
+      "image": "yallknwjuno.webp",
+      "rarity": "common",
+      "total_available": 300
+    },
+    {
+      "id": 14,
+      "name": "Arieloso",
+      "image": "arieloso.webp",
+      "rarity": "common",
+      "total_available": 300
+    }
+  ],
+  "rarities": [
+    {
+      "name": "common",
+      "drop_rate": 0.7,
+      "color": "#AAAAAA"
+    },
+    {
+      "name": "rare",
+      "drop_rate": 0.2,
+      "color": "#5555FF"
+    },
+    {
+      "name": "epic",
+      "drop_rate": 0.08,
+      "color": "#AA00FF"
+    },
+    {
+      "name": "legendary",
+      "drop_rate": 0.02,
+      "color": "#FFD700"
+    },
+    {
+      "name": "Mythic",
+      "drop_rate": 0.001,
+      "color": "#86E71A"
+    }
+  ]
+}

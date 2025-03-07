@@ -1,0 +1,82 @@
+{
+  "users": [
+    {
+      "id": "631907198930386950",
+      "name": "glazzier_",
+      "last_daily": "2025-03-07T14:06:08.377028+00:00",
+      "cards": [
+        {
+          "id": 2,
+          "name": "latinorumana",
+          "rarity": "common",
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "id": "993100720100347915",
+      "name": "latinorumana",
+      "last_daily": "2025-03-07T14:09:31.150825+00:00",
+      "cards": [
+        {
+          "id": 3,
+          "name": "p3rah",
+          "rarity": "epic",
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "id": "474940211688767488",
+      "name": "empanadasconqueso",
+      "last_daily": "2025-03-07T14:38:06.088235+00:00",
+      "cards": [
+        {
+          "id": 2,
+          "name": "latinorumana",
+          "rarity": "common",
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "id": "751566036100317324",
+      "name": "inderxf",
+      "last_daily": "2025-03-07T14:52:20.886240+00:00",
+      "cards": [
+        {
+          "id": 2,
+          "name": "latinorumana",
+          "rarity": "common",
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "id": "513455013876727810",
+      "name": "p3rah",
+      "last_daily": "2025-03-07T17:53:17.642100+00:00",
+      "cards": [
+        {
+          "id": 2,
+          "name": "latinorumana",
+          "rarity": "common",
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "id": "690577955361128549",
+      "name": "jajas0_1",
+      "last_daily": "2025-03-07T17:57:36.768066+00:00",
+      "cards": [
+        {
+          "id": 9,
+          "name": "mohita",
+          "rarity": "common",
+          "quantity": 1
+        }
+      ]
+    }
+  ]
+}

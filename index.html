@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colección de Cartas</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --accent: #bb86fc;
+            --header-bg: #1a1a1a;
+            --search-bg: #2d2d2d;
+            --tab-active: #3a3a3a;
+            --tab-inactive: #252525;
+            --user-card-bg: #252525;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+            padding-top: 140px; /* Space for fixed header */
+        }
+        
+        header {
+            background-color: var(--header-bg);
+            padding: 20px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        
+        header.compact {
+            padding: 10px 20px;
+        }
+        
+        header.compact h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--accent);
+            font-size: 2.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        #search {
+            width: 100%;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            background-color: var(--search-bg);
+            color: var(--text-primary);
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        
+        #search:focus {
+            box-shadow: 0 0 0 2px var(--accent);
+        }
+        
+        .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+        
+        .rarity-filters {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0 10px;
+        }
+        
+        .rarity-filter {
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+        
+        .rarity-filter.active {
+            border-color: white;
+            transform: scale(1.05);
+        }
+        
+        .tab-container {
+            display: flex;
+            justify-content: center;
+            margin: 0 auto 30px;
+            max-width: 600px;
+            border-radius: 10px;
+            overflow: hidden;
+            background-color: var(--tab-inactive);
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 12px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .tab.active {
+            background-color: var(--tab-active);
+            color: var(--accent);
+        }
+        
+        .content-section {
+            display: none;
+        }
+        
+        .content-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+            padding: 20px 0;
+        }
+        
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+        
+        .card-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 3px solid;
+        }
+        
+        .card-info {
+            padding: 15px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .card-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .card-rarity {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+        
+        .card-stats {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .no-results {
+            text-align: center;
+            grid-column: 1 / -1;
+            padding: 40px;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+        }
+        
+        .probability-bar {
+            height: 6px;
+            width: 100%;
+            background-color: #333;
+            border-radius: 3px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .probability-fill {
+            height: 100%;
+            border-radius: 3px;
+        }
+        
+        /* User cards section */
+        .users-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .user-filter-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .user-filter {
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            background-color: var(--tab-inactive);
+            border: 2px solid transparent;
+        }
+        
+        .user-filter.active {
+            background-color: var(--accent);
+            color: #000;
+            border-color: white;
+        }
+        
+        .user-card {
+            background-color: var(--user-card-bg);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .user-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .user-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .user-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--accent);
+        }
+        
+        .user-last-daily {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        .user-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        
+        .user-card-item {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.2s ease;
+            border-left: 3px solid;
+        }
+        
+        .user-card-item:hover {
+            transform: scale(1.05);
+        }
+        
+        .user-card-name {
+            font-weight: 500;
+            margin: 8px 0 5px;
+            text-align: center;
+        }
+        
+        .user-card-rarity {
+            font-size: 0.8rem;
+            padding: 3px 8px;
+            border-radius: 10px;
+            margin-bottom: 5px;
+        }
+        
+        .user-card-quantity {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--accent);
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            z-index: 900;
+        }
+        
+        .back-to-top.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding-top: 130px;
+            }
+            
+            .cards-container {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .user-cards-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+                padding-top: 120px;
+            }
+            
+            .cards-container {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .tab {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+            
+            .user-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            
+            .user-cards-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        .user-cards-detail-section {
+            margin-top: 25px;
+            border-top: 1px solid #333;
+            padding-top: 15px;
+        }
+        
+        .user-cards-detail-section h3 {
+            margin-bottom: 15px;
+            color: var(--accent);
+            font-size: 1.2rem;
+        }
+        
+        .user-cards-detail {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .user-card-detail-item {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease;
+        }
+        
+        .user-card-detail-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .card-detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .card-detail-header h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .card-detail-rarity {
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .card-detail-content {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .card-detail-image {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        
+        .card-detail-info {
+            flex: 1;
+        }
+        
+        .card-detail-info p {
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        .card-detail-info p strong {
+            color: var(--text-primary);
+        }
+        
+        @media (max-width: 768px) {
+            .card-detail-content {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            
+            .card-detail-image {
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header id="header">
+        <h1>Colección de Cartas</h1>
+        <div class="search-container">
+            <input type="text" id="search" placeholder="Buscar por nombre o rareza...">
+            <span class="search-icon">🔍</span>
+        </div>
+        <div class="rarity-filters" id="rarity-filters">
+            <!-- Rarity filters will be added here dynamically -->
+        </div>
+    </header>
+    
+    <div class="tab-container">
+        <div class="tab active" data-tab="collection">Colección</div>
+        <div class="tab" data-tab="users">Usuarios</div>
+    </div>
+    
+    <div class="content-section active" id="collection-section">
+        <div class="cards-container" id="cards-container">
+            <!-- Cards will be added here dynamically -->
+        </div>
+    </div>
+    
+    <div class="content-section" id="users-section">
+        <div class="user-filter-container" id="user-filters">
+            <!-- User filters will be added here dynamically -->
+        </div>
+        <div class="users-container" id="users-container">
+            <!-- User cards will be added here dynamically -->
+        </div>
+    </div>
+    
+    <div class="back-to-top" id="back-to-top">↑</div>
+
+    <script>
+        // Global variables
+        let cardsData = null;
+        let usersData = null;
+        let activeTab = 'collection';
+        let selectedUser = 'all';
+        
+        // Load the JSON data
+        Promise.all([
+            fetch('rarity.json').then(response => response.json()),
+            fetch('user_cards.json').then(response => response.json())
+        ])
+        .then(([cardsJson, usersJson]) => {
+            // Store the data globally
+            cardsData = cardsJson;
+            usersData = usersJson;
+            
+            // Initialize the UI
+            initializeRarityFilters(cardsData.rarities);
+            initializeUserFilters(usersData.users);
+            renderCards(cardsData.cards);
+            renderUsers(usersData.users);
+            
+            // Set up event listeners
+            setupEventListeners();
+        })
+        .catch(error => {
+            console.error('Error loading data:', error);
+            document.getElementById('cards-container').innerHTML = `
+                <div class="no-results">Error cargando datos. Por favor, intenta de nuevo más tarde.</div>
+            `;
+        });
+        
+        // Initialize rarity filters
+        function initializeRarityFilters(rarities) {
+            const filtersContainer = document.getElementById('rarity-filters');
+            
+            // Add "All" filter
+            const allFilter = document.createElement('div');
+            allFilter.className = 'rarity-filter active';
+            allFilter.dataset.rarity = 'all';
+            allFilter.textContent = 'Todas';
+            allFilter.style.backgroundColor = '#444';
+            filtersContainer.appendChild(allFilter);
+            
+            // Add filters for each rarity
+            rarities.forEach(rarity => {
+                const filter = document.createElement('div');
+                filter.className = 'rarity-filter';
+                filter.dataset.rarity = rarity.name.toLowerCase();
+                filter.textContent = rarity.name.charAt(0).toUpperCase() + rarity.name.slice(1);
+                filter.style.backgroundColor = rarity.color;
+                
+                // Adjust text color for better contrast
+                const isLight = isLightColor(rarity.color);
+                filter.style.color = isLight ? '#000' : '#fff';
+                
+                filtersContainer.appendChild(filter);
+            });
+        }
+        
+        // Initialize user filters
+        function initializeUserFilters(users) {
+            const filtersContainer = document.getElementById('user-filters');
+            
+            // Add "All" filter
+            const allFilter = document.createElement('div');
+            allFilter.className = 'user-filter active';
+            allFilter.dataset.user = 'all';
+            allFilter.textContent = 'Todos';
+            filtersContainer.appendChild(allFilter);
+            
+            // Add filter for each user
+            users.forEach(user => {
+                const filter = document.createElement('div');
+                filter.className = 'user-filter';
+                filter.dataset.user = user.id;
+                filter.textContent = user.name;
+                filtersContainer.appendChild(filter);
+            });
+        }
+        
+        // Render cards
+        function renderCards(cards, filter = 'all', searchTerm = '') {
+            const container = document.getElementById('cards-container');
+            container.innerHTML = '';
+            
+            // Filter cards by rarity and search term
+            let filteredCards = cards;
+            
+            if (filter !== 'all') {
+                filteredCards = filteredCards.filter(card => 
+                    card.rarity.toLowerCase() === filter.toLowerCase()
+                );
+            }
+            
+            if (searchTerm) {
+                const term = searchTerm.toLowerCase();
+                filteredCards = filteredCards.filter(card => 
+                    card.name.toLowerCase().includes(term) || 
+                    card.rarity.toLowerCase().includes(term)
+                );
+            }
+            
+            // Show message if no cards match the filters
+            if (filteredCards.length === 0) {
+                container.innerHTML = `
+                    <div class="no-results">No se encontraron cartas que coincidan con los filtros.</div>
+                `;
+                return;
+            }
+            
+            // Render each card
+            filteredCards.forEach(card => {
+                const rarity = cardsData.rarities.find(r => 
+                    r.name.toLowerCase() === card.rarity.toLowerCase()
+                );
+                
+                const cardElement = document.createElement('div');
+                cardElement.className = 'card';
+                
+                // Calculate drop probability percentage
+                const dropRate = rarity ? rarity.drop_rate * 100 : 0;
+                const formattedDropRate = dropRate < 1 ? dropRate.toFixed(2) : dropRate.toFixed(1);
+                
+                cardElement.innerHTML = `
+                    <img src="img/${card.image}" alt="${card.name}" class="card-image" style="border-color: ${rarity ? rarity.color : '#888'}">
+                    <div class="card-info">
+                        <div class="card-name">${card.name}</div>
+                        <div class="card-rarity" style="background-color: ${rarity ? rarity.color : '#888'}; color: ${isLightColor(rarity ? rarity.color : '#888') ? '#000' : '#fff'}">${card.rarity}</div>
+                        <div class="card-stats">
+                            <span>Disponibles: ${card.total_available}</span>
+                            <span>Probabilidad: ${formattedDropRate}%</span>
+                        </div>
+                        <div class="probability-bar">
+                            <div class="probability-fill" style="width: ${Math.min(dropRate * 5, 100)}%; background-color: ${rarity ? rarity.color : '#888'}"></div>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(cardElement);
+            });
+        }
+        
+        // Render users
+        // Función mejorada para mostrar las cartas de cada usuario
+        function renderUsers(users, filter = 'all') {
+        const container = document.getElementById('users-container');
+        container.innerHTML = '';
+        
+        // Filter users if needed
+        let filteredUsers = users;
+        if (filter !== 'all') {
+        filteredUsers = filteredUsers.filter(user => user.id === filter);
+        }
+        
+        // Render each user
+        filteredUsers.forEach(user => {
+        const userCard = document.createElement('div');
+        userCard.className = 'user-card';
+        
+        // Format date
+        const lastDaily = new Date(user.last_daily);
+        const formattedDate = lastDaily.toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+        });
+        
+        // Calcular estadísticas de cartas del usuario
+        const totalCards = user.cards ? user.cards.reduce((sum, card) => sum + card.quantity, 0) : 0;
+        const cardsByRarity = {};
+        
+        if (user.cards && user.cards.length > 0) {
+        user.cards.forEach(card => {
+        const rarity = card.rarity.toLowerCase();
+        if (!cardsByRarity[rarity]) {
+        cardsByRarity[rarity] = 0;
+        }
+        cardsByRarity[rarity] += card.quantity;
+        });
+        }
+        
+        // Crear resumen de estadísticas
+        let rarityStats = '';
+        for (const rarity in cardsByRarity) {
+        const rarityInfo = cardsData.rarities.find(r => r.name.toLowerCase() === rarity);
+        const color = rarityInfo ? rarityInfo.color : '#888';
+        rarityStats += `
+        <span class="rarity-stat" style="background-color: ${color}; color: ${isLightColor(color) ? '#000' : '#fff'}">
+        ${rarity.charAt(0).toUpperCase() + rarity.slice(1)}: ${cardsByRarity[rarity]}
+        </span>
+        `;
+        }
+        
+        userCard.innerHTML = `
+        <div class="user-header">
+        <div class="user-name">${user.name}</div>
+        <div class="user-last-daily">Último daily: ${formattedDate}</div>
+        </div>
+        <div class="user-stats">
+        <div class="user-total-cards">Total de cartas: <strong>${totalCards}</strong></div>
+        <div class="user-rarity-stats">${rarityStats || 'Sin cartas'}</div>
+        </div>
+        <div class="user-cards-header">
+        <h3>Colección de cartas</h3>
+        <button class="toggle-cards-btn" data-user="${user.id}">Mostrar/Ocultar</button>
+        </div>
+        <div class="user-cards-grid" id="user-cards-${user.id}" style="display: none;">
+        <!-- User cards will be added here -->
+        </div>
+        <div class="user-cards-detail-section">
+        <h3>Detalle de cartas por usuario</h3>
+        <div class="user-cards-detail" id="user-cards-detail-${user.id}">
+        <!-- Detailed user cards will be added here -->
+        </div>
+        </div>
+        `;
+        
+        container.appendChild(userCard);
+        
+        // Render user's cards
+        const userCardsGrid = document.getElementById(`user-cards-${user.id}`);
+        const userCardsDetail = document.getElementById(`user-cards-detail-${user.id}`);
+        
+        if (user.cards && user.cards.length > 0) {
+        user.cards.forEach(card => {
+        // Find card details from cardsData
+        const cardDetails = cardsData.cards.find(c => c.id === card.id);
+        if (!cardDetails) return;
+        
+        // Find rarity details
+        const rarity = cardsData.rarities.find(r => 
+        r.name.toLowerCase() === card.rarity.toLowerCase()
+        );
+        
+        const cardElement = document.createElement('div');
+        cardElement.className = 'user-card-item';
+        cardElement.style.borderColor = rarity ? rarity.color : '#888';
+        
+        cardElement.innerHTML = `
+        <img src="img/${cardDetails.image}" alt="${card.name}" width="80" height="80" style="object-fit: cover; border-radius: 5px;">
+        <div class="user-card-name">${card.name}</div>
+        <div class="user-card-rarity" style="background-color: ${rarity ? rarity.color : '#888'}; color: ${isLightColor(rarity ? rarity.color : '#888') ? '#000' : '#fff'}">${card.rarity}</div>
+        <div class="user-card-quantity">x${card.quantity}</div>
+        `;
+        
+        userCardsGrid.appendChild(cardElement);
+        
+        // Add detailed card information to the user-cards-detail section
+        const cardDetailElement = document.createElement('div');
+        cardDetailElement.className = 'user-card-detail-item';
+        cardDetailElement.innerHTML = `
+        <div class="card-detail-header" style="border-left: 4px solid ${rarity ? rarity.color : '#888'}; padding-left: 10px;">
+          <h4>${card.name}</h4>
+          <span class="card-detail-rarity" style="background-color: ${rarity ? rarity.color : '#888'}; color: ${isLightColor(rarity ? rarity.color : '#888') ? '#000' : '#fff'}">${card.rarity}</span>
+        </div>
+        <div class="card-detail-content">
+          <img src="img/${cardDetails.image}" alt="${card.name}" class="card-detail-image">
+          <div class="card-detail-info">
+            <p><strong>ID:</strong> ${card.id}</p>
+            <p><strong>Cantidad:</strong> ${card.quantity}</p>
+            <p><strong>Disponibles totales:</strong> ${cardDetails.total_available}</p>
+            <p><strong>Rareza:</strong> ${card.rarity} (${(rarity ? rarity.drop_rate * 100 : 0).toFixed(2)}% probabilidad)</p>
+          </div>
+        </div>
+        `;
+        
+        userCardsDetail.appendChild(cardDetailElement);
+        });
+        } else {
+        userCardsGrid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 20px; color: var(--text-secondary);">Este usuario no tiene cartas.</div>`;
+        userCardsDetail.innerHTML = `<div style="text-align: center; padding: 20px; color: var(--text-secondary);">Este usuario no tiene cartas en su colección.</div>`;
+        }
+        });
+        }
+        
+        // Set up event listeners
+        function setupEventListeners() {
+            // Rarity filters
+            const rarityFilters = document.querySelectorAll('.rarity-filter');
+            rarityFilters.forEach(filter => {
+                filter.addEventListener('click', () => {
+                    // Update active filter
+                    rarityFilters.forEach(f => f.classList.remove('active'));
+                    filter.classList.add('active');
+                    
+                    // Re-render cards with filter
+                    const searchTerm = document.getElementById('search').value;
+                    renderCards(cardsData.cards, filter.dataset.rarity, searchTerm);
+                });
+            });
+            
+            // User filters
+            const userFilters = document.querySelectorAll('.user-filter');
+            userFilters.forEach(filter => {
+                filter.addEventListener('click', () => {
+                    // Update active filter
+                    userFilters.forEach(f => f.classList.remove('active'));
+                    filter.classList.add('active');
+                    
+                    // Update selected user and re-render
+                    selectedUser = filter.dataset.user;
+                    renderUsers(usersData.users, selectedUser);
+                });
+            });
+            
+            // Search input
+            const searchInput = document.getElementById('search');
+            searchInput.addEventListener('input', () => {
+                const activeRarity = document.querySelector('.rarity-filter.active').dataset.rarity;
+                renderCards(cardsData.cards, activeRarity, searchInput.value);
+            });
+            
+            // Tab switching
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Update active tab
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    // Show corresponding section
+                    const sections = document.querySelectorAll('.content-section');
+                    sections.forEach(section => section.classList.remove('active'));
+                    
+                    activeTab = tab.dataset.tab;
+                    document.getElementById(`${activeTab}-section`).classList.add('active');
+                });
+            });
+            
+            // Toggle cards buttons
+            document.addEventListener('click', function(event) {
+                if (event.target.classList.contains('toggle-cards-btn')) {
+                    const userId = event.target.dataset.user;
+                    const cardsGrid = document.getElementById(`user-cards-${userId}`);
+                    
+                    // Toggle display
+                    if (cardsGrid.style.display === 'none') {
+                        cardsGrid.style.display = 'grid';
+                        event.target.textContent = 'Ocultar';
+                    } else {
+                        cardsGrid.style.display = 'none';
+                        event.target.textContent = 'Mostrar';
+                    }
+                }
+            });
+            
+            // Back to top button
+            const backToTopBtn = document.getElementById('back-to-top');
+            backToTopBtn.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+            
+            // Show/hide back to top button on scroll
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 300) {
+                    backToTopBtn.classList.add('visible');
+                } else {
+                    backToTopBtn.classList.remove('visible');
+                }
+                
+                // Make header compact on scroll
+                const header = document.getElementById('header');
+                if (window.scrollY > 50) {
+                    header.classList.add('compact');
+                } else {
+                    header.classList.remove('compact');
+                }
+            });
+        }
+        
+        // Utility function to determine if a color is light or dark
+        function isLightColor(color) {
+            // Convert hex to RGB
+            let r, g, b;
+            
+            if (color.startsWith('#')) {
+                const hex = color.substring(1);
+                r = parseInt(hex.substr(0, 2), 16);
+                g = parseInt(hex.substr(2, 2), 16);
+                b = parseInt(hex.substr(4, 2), 16);
+            } else if (color.startsWith('rgb')) {
+                const rgb = color.match(/\d+/g);
+                r = parseInt(rgb[0]);
+                g = parseInt(rgb[1]);
+                b = parseInt(rgb[2]);
+            } else {
+                return false;
+            }
+            
+            // Calculate luminance
+            const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+            return luminance > 0.5;
+        }
+    </script>
+</body>
+</html>
