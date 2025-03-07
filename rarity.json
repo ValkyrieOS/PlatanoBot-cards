@@ -97,6 +97,69 @@
       "image": "arieloso.webp",
       "rarity": "common",
       "total_available": 300
+    },
+    {
+      "id": 15,
+      "name": "H0PPY!!",
+      "image": "h0ppy.webp",
+      "rarity": "common",
+      "total_available": 300
+    },
+    {
+      "id": 16,
+      "name": "Antonio",
+      "image": "antonio.webp",
+      "rarity": "legendary",
+      "total_available": 15
+    },
+    {
+      "id": 17,
+      "name": "Albondiga",
+      "image": "albondiga.webp",
+      "rarity": "common",
+      "total_available": 300
+    },
+    {
+      "id": 18,
+      "name": "dunno",
+      "image": "dunno.webp",
+      "rarity": "common",
+      "total_available": 300
+    },
+    {
+      "id": 19,
+      "name": "monchaa",
+      "image": "moncha.webp",
+      "rarity": "rare",
+      "total_available": 200
+    },
+    {
+      "id": 20,
+      "name": "chiara.dorito",
+      "image": "chiara_dorito.webp",
+      "rarity": "common",
+      "total_available": 300
+    },
+    {
+      "id": 21,
+      "name": "Ragnar",
+      "image": "ragnar.webp",
+      "rarity": "common",
+      "total_available": 300
+    },
+    {
+      "id": 22,
+      "name": "nikki",
+      "image": "nikki.webp",
+      "rarity": "common",
+      "total_available": 300
+    },
+    {
+      "id": 23,
+      "name": "sandra",
+      "image": "sandra.webp",
+      "rarity": "common",
+      "total_available": 300
     }
   ],
   "rarities": [
